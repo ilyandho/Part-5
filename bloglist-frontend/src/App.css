@@ -1,0 +1,27 @@
+.message {
+  width: 100%;
+  height: 40px;
+  border: 3px solid green;
+  border-radius: 5px;
+  color: green;
+  font-size: 16px;
+  text-align: center;
+  border: 3px solid green;
+  color: green;
+  background: #ccc;
+}
+
+.no-message {
+  display: none;
+}
+
+.error {
+  width: 100%;
+  height: 40px;
+  border-radius: 5px;
+  font-size: 16px;
+  text-align: center;
+  color: red;
+  border: 3px solid red;
+  background: #ccc;
+}
