@@ -3,7 +3,8 @@ import Blog from './components/Blog';
 import blogService from './services/blogs';
 import loginService from './services/login';
 import LoginForm from './components/LoginForm';
-import AddBlogForm from './components/AddBlog';
+import AddBlogForm from './components/AddBlogForm';
+import Toggable from './components/Toggable';
 import './App.css';
 
 const App = () => {
@@ -11,13 +12,22 @@ const App = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
-  const [title, setTitle] = useState('');
-  const [url, setUrl] = useState('');
   const [message, setMessage] = useState(null);
   const [messageType, setMessageType] = useState('no-message');
 
+  const createBlogRef = React.createRef();
+
+  // Sort the blogs by most likes
+  const sortBlogs = (array) => {
+    const sorted = array.sort((a, b) => {
+      return b.likes - a.likes;
+    });
+    console.log(sorted);
+    return sorted;
+  };
+
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+    blogService.getAll().then((blogs) => setBlogs(sortBlogs(blogs)));
   }, []);
 
   // Check if there is a logged in user in localStorage
@@ -56,21 +66,19 @@ const App = () => {
     // console.log('logging in with', username, password);
   };
 
-  const handleLogOut = async (event) => {
+  const handleLogOut = async () => {
     console.log('logging out');
     window.localStorage.removeItem('loggedInBlogAppUser');
     setUser(null);
     blogService.setToken(null);
   };
 
-  const handleAddBlogSubmit = async (event) => {
-    event.preventDefault();
-    console.log('added ', title, url);
+  const addBlog = async (obj) => {
     try {
-      const newBlog = await blogService.create({ title, url });
-      setBlogs([...blogs, newBlog]);
-      setTitle('');
-      setUrl('');
+      createBlogRef.current.toggleVisibility();
+      const newBlog = await blogService.create(obj);
+      const newBlogs = [...blogs, newBlog];
+      setBlogs(sortBlogs(newBlogs));
       setMessage(`a new blog ${newBlog.title} by ${user.name} added`);
       setMessageType('message');
 
@@ -80,6 +88,53 @@ const App = () => {
       }, 5000);
     } catch (e) {
       console.log('Could not save the blog');
+    }
+  };
+
+  const updateBlog = async (id, obj) => {
+    console.log(id, obj);
+    try {
+      const response = await blogService.update(id, obj);
+      const updatedBlogs = await blogs.map((blog) => {
+        if (blog.id === response.id) {
+          blog.likes += 1;
+        }
+        return blog;
+      });
+
+      setBlogs(sortBlogs(updatedBlogs));
+    } catch (err) {
+      console.log('no update made');
+    }
+  };
+
+  const deleteBlog = async (obj) => {
+    console.log('obj', obj);
+
+    if (window.confirm(`Remove blog ${obj.title}`)) {
+      try {
+        const respo = await blogService.remove(obj.id);
+        console.log('delete res', respo);
+        setMessageType('message');
+        setMessage(`${obj.title} has been deleted`);
+        setTimeout(() => {
+          setMessageType('no-message');
+          setMessage(null);
+        }, 5000);
+
+        const remainingBlogs = blogs.filter((blog) => blog.id !== obj.id);
+
+        setBlogs(remainingBlogs);
+      } catch (err) {
+        console.log('error', err.response);
+        setMessageType('error');
+        setMessage(err.response.data.error);
+        setTimeout(() => {
+          setMessageType('no-message');
+          setMessage(null);
+        }, 5000);
+        return err.response.data.error;
+      }
     }
   };
 
@@ -108,14 +163,17 @@ const App = () => {
       <h5>
         {user.name} logged in <button onClick={handleLogOut}>Log Out</button>
       </h5>
-      <AddBlogForm
-        title={title}
-        setTitle={setTitle}
-        url={url}
-        setUrl={setUrl}
-        handleAddBlogSubmit={handleAddBlogSubmit}></AddBlogForm>{' '}
+      <Toggable showButtonLabel="New Bolg" ref={createBlogRef}>
+        <AddBlogForm addBlog={addBlog}></AddBlogForm>
+      </Toggable>
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog
+          user={user}
+          blog={blog}
+          key={blog.id}
+          update={updateBlog}
+          deleteBlog={deleteBlog}
+        />
       ))}
     </div>
   );
