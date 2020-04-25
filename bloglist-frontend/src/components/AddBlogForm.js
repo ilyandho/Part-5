@@ -16,18 +16,23 @@ const AddBlogForm = ({ addBlog }) => {
     setUrl('');
   };
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} id="form">
       <h3>Create a new blog</h3>
       <div>
         Blog title:{' '}
         <input
           value={title}
           onChange={({ target }) => setTitle(target.value)}
+          className="title"
         />
       </div>
       <div>
         Blog url:{' '}
-        <input value={url} onChange={({ target }) => setUrl(target.value)} />
+        <input
+          value={url}
+          onChange={({ target }) => setUrl(target.value)}
+          className="url"
+        />
       </div>
       <button type="submit">create</button>
     </form>
