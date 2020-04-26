@@ -28,10 +28,12 @@ const Blog = ({ blog, update, deleteBlog, user }) => {
     deleteBlog(blog);
   };
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className="singleBlog">
       <div style={hideWhenVisible} className="previewContent">
         {blog.title} {blog.author} (likes: {blog.likes})
-        <button onClick={toggleVisibility}>view</button>{' '}
+        <button onClick={toggleVisibility} className="viewBtn">
+          view
+        </button>{' '}
         <button onClick={handleLike} className="like">
           Like
         </button>
@@ -47,12 +49,16 @@ const Blog = ({ blog, update, deleteBlog, user }) => {
         <h4> {blog.url} </h4>
         <h4> {blog.name}</h4>
         <h4> {blog.author}</h4>
-        <h4>
+        <h4 className="blogLikes">
           {' '}
           {blog.likes} <button onClick={handleLike}>Like</button>
         </h4>
-        <button onClick={handleDelete}>Delete</button>
-        <button onClick={toggleVisibility}>hide</button>
+        <button onClick={handleDelete} className="deleteBtn">
+          Delete
+        </button>
+        <button onClick={toggleVisibility} className="hideBtn">
+          hide
+        </button>
       </div>
     </div>
   );

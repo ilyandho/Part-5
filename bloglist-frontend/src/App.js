@@ -22,7 +22,6 @@ const App = () => {
     const sorted = array.sort((a, b) => {
       return b.likes - a.likes;
     });
-    console.log(sorted);
     return sorted;
   };
 
@@ -161,20 +160,25 @@ const App = () => {
         <p>{message}</p>
       </div>
       <h5>
-        {user.name} logged in <button onClick={handleLogOut}>Log Out</button>
+        {user.name} logged in{' '}
+        <button onClick={handleLogOut} className="logoutBtn">
+          Log Out
+        </button>
       </h5>
-      <Toggable showButtonLabel="New Bolg" ref={createBlogRef}>
+      <Toggable showButtonLabel="New Blog" ref={createBlogRef}>
         <AddBlogForm addBlog={addBlog}></AddBlogForm>
       </Toggable>
-      {blogs.map((blog) => (
-        <Blog
-          user={user}
-          blog={blog}
-          key={blog.id}
-          update={updateBlog}
-          deleteBlog={deleteBlog}
-        />
-      ))}
+      <div className="blog-list">
+        {blogs.map((blog) => (
+          <Blog
+            user={user}
+            blog={blog}
+            key={blog.id}
+            update={updateBlog}
+            deleteBlog={deleteBlog}
+          />
+        ))}
+      </div>
     </div>
   );
 };

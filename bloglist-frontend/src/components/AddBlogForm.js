@@ -34,7 +34,9 @@ const AddBlogForm = ({ addBlog }) => {
           className="url"
         />
       </div>
-      <button type="submit">create</button>
+      <button type="submit" id="createBtn">
+        create
+      </button>
     </form>
   );
 };
